@@ -1,0 +1,382 @@
+# RedWine-EDA
+---
+output:
+  pdf_document: default
+  html_document: default
+---
+
+Which chemical properties influence the quality of Red Wines? by Sarah Alofaysan
+========================================================
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, packages}
+# Here I load all of the packages that I use in my analysis
+library(ggplot2)
+library(knitr)
+library(dplyr)
+```
+
+```{r echo=FALSE,message=FALSE, warning=FALSE, Load_the_Data}
+# Load the Data
+RWine_data=read.csv("wineQualityReds.csv")
+RWine_data
+```
+### Investigating Portuguese "Vinho Verde" Red Wine Data set  
+Our dataset consists of 13 variables, with almost 1599 observations. No data about grape types, wine brand, wine selling price was shared due to privacy and logistic issues. Some of the shared features corrolate highly with wine quality while others are not. Here is a list of the provided features and its description:
+
+1- Fixed Acidity: most acids involved with wine or fixed or nonvolatile (do not evaporate readily)
+2- Volatile Acidity: the amount of acetic acid in wine, which at too high of levels can lead to an unpleasant, vinegar taste
+3- Citric Acid: found in small quantities, citric acid can add 'freshness' and flavor to wines.
+4- Residual Sugar: the amount of sugar remaining after fermentation stops, it's rare to find wines with less than 1 gram/liter and wines with greater than 45 grams/liter are considered sweet.
+5- Chlorides: the amount of salt in the wine
+6- Free Sulfur Dioxide: the free form of SO2 exists in equilibrium between molecular SO2 (as a dissolved gas) and bisulfite ion; it prevents microbial growth and the oxidation of wine
+7- Total Sulfur Dioxide: amount of free and bound forms of S02; in low concentrations, SO2 is mostly undetectable in wine, but at free SO2 concentrations over 50 ppm, SO2 becomes evident in the nose and taste of wine
+8- Density: the density of water is close to that of water depending on the percent alcohol and sugar content
+9- pH:pH level describes how acidic or basic a wine is on a scale from 0 (very acidic) to 14 (very basic).pH is mainly related to the color of the wine and the soothy taste. 
+10- Sulphates: a wine additive which can contribute to sulfur dioxide gas (S02) levels, wich acts as an antimicrobial and antioxidant
+11- Alcohol: Percent of alcohol.
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+# Getting the Summary for each varabile in the RedWine dataset
+summary(RWine_data)
+```
+
+
+# Univariate Exploration [Plots Section]
+Here I am exploring and plotting each varibale from the provided dataset of Red Wine.
+
+### 1) Red Wine Quality [ output varibale ]
+
+Exprets evalauted the quality of the red wine on a scale of  0 (very bad) and 10 (very excellent).
+
+```{r echo=FALSE,message=FALSE, warning=FALSE}
+ggplot(RWine_data, aes(quality)) + geom_bar() + labs( title= "Quality of Red Wine", y="Total Count", x="Rating of Red Wine") + scale_x_continuous(breaks = c(1,2,3,4,5,6,7,8,9,10),label = c("One","Two","Three","Four","Five", "Six","Seven","Eight","Nine", "Ten"))
+```
+
+We can clearly observe that most of red wine quality is between 5 and 6
+
+### 2) Distrubution on pH level
+pH level describes how acidic or basic a wine is on a scale from 0 (very acidic) to 14 (very basic). pH affects color, stability to oxidation, and consequantly the overall lifespan of a wine, pH also makes wines taste softer.
+
+```{r echo=FALSE,message=FALSE, warning=FALSE}
+qplot(x = RWine_data["pH"], main = "Distrubution of pH among Red Wine") + xlab("pH level") + ylab("Total Count") 
+```
+
+We can clearly see from the graph that most red wines are between 3-4 on the pH scale (tend to be more acidic).
+
+### 3) Alcohol
+Alcohol level in Red wine as plotted below:
+
+```{r echo=FALSE,message=FALSE, warning=FALSE}
+qplot(x = RWine_data["alcohol"], main = "Alcohol level in Red Wine") + xlab("Percent of Alcohol in Red Wine") + ylab("Total Count")
+```
+
+We can clearly notice that all Red Wines has 14% of alcohol or less. The majority of Red Wines fall in the range of 6% to 7%.
+
+### 4) Residual Sugar
+This represent the amount of sugar remaining after fermentation process stops.
+
+```{r echo=FALSE,message=FALSE, warning=FALSE}
+qplot(x = RWine_data["residual.sugar"]) + labs(x="Residual Suger in Red Wine by Gram per Liter", y=("Total Count"), title= "Suger level in Red Wine")+ stat_bin(bins=100) + scale_x_log10() 
+```
+
+We can Notice that it is rare to find a red wine with less than 1 gram/liter of residual sugar. Most of the Red Wine has a residual sugar between the range of 3 to 6 gram/liter.Furthermore, any wines with greater than 45 grams/liter are considered sweet.
+
+### 5) Chlorides
+This represent the amount of salt in Red Wine.
+
+```{r echo=FALSE,message=FALSE, warning=FALSE}
+qplot(x = RWine_data["chlorides"], main = "Salt level in Red Wine") + xlab("Chlorides in Red Wine by Gram per Liter") + ylab("Total Count") + scale_x_log10() 
+```
+
+This graph shows us that the a mount of salt in Red wine is less than 0.15.
+
+### 6) Free Sulfur Dioxide
+The free sulfur dioxide prevents microbial growth and the oxidation of wine.
+
+```{r echo=FALSE,message=FALSE, warning=FALSE}
+qplot(x = RWine_data["free.sulfur.dioxide"], main = "Free Sulfur Dioxide levels in Red Wine") + xlab("Free Sulfur Dioxide in Red Wine") + ylab("Total Count")
+```
+
+We can clearly see that most of red wine had free sulfur dioxode less that 40.
+
+### 7) Total Sulfur Dioxide 
+if free SO2 concentrations over 50 ppm, SO2 becomes evident in the nose and taste of wine..
+
+```{r echo=FALSE,message=FALSE, warning=FALSE}
+qplot(x = RWine_data["total.sulfur.dioxide"], main = "Total Sulfur Dioxide levels in Red Wine") + xlab("Total Sulfur Dioxide in Red Wine") + ylab("Total Count")  + scale_x_log10() 
+```
+
+###8) Density
+This shows the density of water in Red Wine depending on the percent of alcohol and sugar content
+
+```{r echo=FALSE,message=FALSE, warning=FALSE}
+qplot(x = RWine_data["density"], main = "Density of Water in Red Wine") + xlab("Density of Water in Red Wine") + ylab("Total Count")
+```
+
+The density of water in Red Wine is clearly presented a bell curve where most of wine fall between the range of 0.99 and 1.
+
+###9) Fixed Acidity
+Most acids involved with wine, fixed or nonvolatile (do not evaporate readily). Acids are major wine constituents and contribute greatly to its taste.  In fact, acids impart the sourness or tartness that which is a fundamental feature in wine taste.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+qplot(x = RWine_data["fixed.acidity"], main = "Fixed Acidity in Red Wine") + xlab("Fixed Acidity in Red Wine") + ylab("Total Count") + geom_freqpoly(color="red")
+```
+
+We clearly see that most of Red Wine has Fixed acidity between 6 to 9. In rare sample, fixed acidity was as high as 16.
+
+###10) Volatile Acidity
+This represent the amount of Acetic Acid in wine, which at too high of levels can lead to an unpleasant, vinegar taste.
+
+```{r echo=FALSE,message=FALSE, warning=FALSE}
+qplot(x = RWine_data["volatile.acidity"], main = "Volatile Acidity in Red Wine") + xlab("Volatile Acidity in Red Wine") + ylab("Total Count")
+```
+
+The graph represent that Volatile Acid is presented in Red wine in mimial amounts ( less than 0.8)
+
+###11) Citric Acid
+Citric Acid can add 'freshness' flavor to wines.
+
+```{r echo=FALSE,message=FALSE, warning=FALSE}
+qplot(x = RWine_data["citric.acid"], main = "Citric Acid in Red Wine") + xlab("Citric Acid in Red Wine") + ylab("Total Count")
+```
+Citric Acid found in very small quantities in Red Wine sample.
+
+###12) Sulphates
+A wine additive which can contribute to sulfur dioxide gas (S02) levels, which acts as an antimicrobial and antioxidant
+
+```{r echo=FALSE,message=FALSE, warning=FALSE}
+qplot(x = RWine_data["sulphates"], main = "Sulphates in Red Wine") + xlab("Sulphates in Red Wine") + ylab("Total Count") 
+```
+The graph shows that Sulphates presented in Red Wine in small quantities ( less than 1.2 gram/liter)
+
+
+# Univariate Analysis
+
+### What is the structure of your dataset?
+
+There are 1599 record for Red Wine in the dataset with 13 features (x,Fixed Acidity,Volatile Acidity,Citric Acid,Residual Sugar,Chlorides,Free Sulfur Dioxide,Total Sulfur Dioxide, Density, pH, Sulphates, Alcohol, and Quality)
+
+The variables Quality is ordered factor variables with the following levels.
+Quality: 0 (very bad) .....till ...... 10 (very excellent).
+
+######Other observations:
+
+- Most of Red Wines are between 5 and 6 in quality rate scale [ The median of Red Wine quality is 6 and the mean is 5.6.]. The maximum quality was 8.
+- The mean of residual suger is 2.5 , the maximum recorded suger in red wine was 15!
+- The mean of Coloraide is 0.08 and the maximum coloride recorded was 0.6
+
+### What is/are the main feature(s) of interest in your dataset?
+From the plotting  I performed in the prevouis section, I found the distubution of the below features are very interesting.
+* Quality
+* Resdiual Suger
+* Coloride
+* pH level
+* Alcohol
+* Total Sulfur Dioxide
+* Density
+* Citric Acid
+
+Furthermore, I’d like to determine which features are best corrolated the quality of Red Wine. I suspect that Citric Acid and Total Sulfur Dioxide are highly corrolated to the quality of Red Wine. Further Analysis will confirm/reject this suspesion.
+
+### What other features in the dataset do you think will help support your investigation into your feature(s) of interest?
+Density, Resdiual Suger, Coloride, pH level will defenitly contribute to the quality of Red Wine.
+
+### Did you create any new variables from existing variables in the dataset?
+No
+
+### Of the features you investigated, were there any unusual distributions? Did you perform any operations on the data to tidy, adjust, or change the form of the data? If so, why did you do this?
+
+The distribution of Resudial Suger, Choloride, and the Total Sulfer Dioxide were all skewed to the right. Accordengly,I log-transformed [usuing log10] these distributions. The tranformed distributions for Choloride, and the Total Sulfer Dioxide appears as Normal Distubutions. For Resudial Suger the result was still skewed to the right after applying log 10 and also after applying squre root, this can be explained as a result of the ouliars at 10% and above of suger level.
+
+
+-------------------------------------------------------------------------------------
+# Bivariate Plots Section
+Here I plot and analyse bivariate data for Red Wine Dataset 
+
+#### 1) Red Wine Quality Rating and Alcohol Percentage
+
+```{r echo=FALSE,message=FALSE, warning=FALSE, Bivariate_Plots}
+ggplot(data=RWine_data, aes(x=quality,y=alcohol)) + geom_point(stat="identity", color="light blue") + labs(title="Red Wine Quality Rating and Alcohol Percentage",x="Red Wine Quality", y= "Alcohol Percentage") + scale_x_continuous(breaks = c(1,2,3,4,5,6,7,8,9,10),label = c("One","Two","Three","Four","Five", "Six","Seven","Eight","Nine", "Ten")) 
+```
+
+#### 2) Red Wine Quality Rating and Fixed Acidity Level
+
+```{r echo=FALSE,,message=FALSE, warning=FALSE, Bivariate_Plots}
+ggplot(data=RWine_data, aes(x=quality,y=fixed.acidity)) + geom_point(stat="identity", color="light blue") + labs(title="Red Wine Quality Rating and Fixed Acidity Level",x="Red Wine Quality", y= "Fixed Acidity") + scale_x_continuous(breaks = c(1,2,3,4,5,6,7,8,9,10),label = c("One","Two","Three","Four","Five", "Six","Seven","Eight","Nine", "Ten"))
+```
+
+#### 3) Red Wine Quality Rating and Volatile Acidity Level
+```{r echo=FALSE,,message=FALSE, warning=FALSE, Bivariate_Plots}
+ggplot(data=RWine_data, aes(x=quality,y=volatile.acidity)) + geom_point(stat="identity", color="light blue") + labs(title="Red Wine Quality Rating and Volatile Acidity Level",x="Red Wine Quality", y= "Volatile Acidity Level") + scale_x_continuous(breaks = c(1,2,3,4,5,6,7,8,9,10),label = c("One","Two","Three","Four","Five", "Six","Seven","Eight","Nine", "Ten"))  
+```
+
+
+#### 4) Red Wine Quality Rating and pH Level
+```{r echo=FALSE,,message=FALSE, warning=FALSE, Bivariate_Plots}
+ggplot(data=RWine_data, aes(x=quality,y=pH)) + geom_point(stat="identity", color="light blue") + labs(title="Red Wine Quality Rating and pH Level",x="Red Wine Quality", y= "pH Level") + scale_x_continuous(breaks = c(1,2,3,4,5,6,7,8,9,10),label = c("One","Two","Three","Four","Five", "Six","Seven","Eight","Nine", "Ten"))
+```
+
+#### 5) Red Wine Quality Rating and Water Density Rate
+```{r echo=FALSE,,message=FALSE, warning=FALSE, Bivariate_Plots}
+ggplot(data=RWine_data, aes(x=quality,y=density)) + geom_point(stat="identity", color="light blue") + labs(title="Red Wine Quality Rating and Water Density Rate",x="Red Wine Quality", y= "Water Density Rate") + scale_x_continuous(breaks = c(1,2,3,4,5,6,7,8,9,10),label = c("One","Two","Three","Four","Five", "Six","Seven","Eight","Nine", "Ten"))
+```
+
+#### 6) Red Wine Quality Rating and Citric Acid Percentage
+```{r echo=FALSE,,message=FALSE, warning=FALSE, Bivariate_Plots}
+ggplot(data=RWine_data, aes(x=quality,y=citric.acid)) + geom_point(stat="identity", color="light blue") + labs(title="Red Wine Quality Rating and Citric Acid Percentage",x="Red Wine Quality", y= "Citric Acid Percentage") + scale_x_continuous(breaks = c(1,2,3,4,5,6,7,8,9,10),label = c("One","Two","Three","Four","Five", "Six","Seven","Eight","Nine", "Ten"))
+```
+
+#### 7) Red Wine Quality Rating and Residual Sugar
+```{r echo=FALSE,,message=FALSE, warning=FALSE, Bivariate_Plots}
+ggplot(data=RWine_data, aes(x=quality,y=residual.sugar)) + geom_point(stat="identity", color="light blue") + labs(title="Red Wine Quality Rating and Residual Sugar",x="Red Wine Quality", y= "Residual Sugar by Grams") + scale_x_continuous(breaks = c(1,2,3,4,5,6,7,8,9,10),label = c("One","Two","Three","Four","Five", "Six","Seven","Eight","Nine", "Ten"))
+```
+
+#### 9) Red Wine Quality Rating and Total Sulfur Dioxide Level
+```{r echo=FALSE,,message=FALSE, warning=FALSE, Bivariate_Plots}
+ggplot(data=RWine_data, aes(x=quality,y=total.sulfur.dioxide)) + geom_point(stat="identity", color="light blue") + labs(title="Red Wine Quality Rating and Total Sulfur Dioxide Level",x="Red Wine Quality", y= "Total Sulfur Dioxide Level") + scale_x_continuous(breaks = c(1,2,3,4,5,6,7,8,9,10),label = c("One","Two","Three","Four","Five", "Six","Seven","Eight","Nine", "Ten"))
+```
+
+#### 10) Red Wine Quality Rating and Sulphates Level
+```{r echo=FALSE,,message=FALSE, warning=FALSE, Bivariate_Plots}
+ggplot(data=RWine_data, aes(x=quality,y=sulphates)) + geom_point(stat="identity", color="light blue") + labs(title="Red Wine Quality Rating and Sulphates Level",x="Red Wine Quality", y= "Sulphates Level") + scale_x_continuous(breaks = c(1,2,3,4,5,6,7,8,9,10),label = c("One","Two","Three","Four","Five", "Six","Seven","Eight","Nine", "Ten"))
+```
+
+#### 11) Red Wine Quality Rating and Volatile Acidity Level
+```{r echo=FALSE,message=FALSE, warning=FALSE, Bivariate_Plots}
+ggplot(data=RWine_data, aes(x=quality,y=volatile.acidity)) + geom_point(stat="identity", color="light blue") + labs(title="Red Wine Quality Rating and Volatile Acidity Level",x="Red Wine Quality", y= "Volatile Acidity Level") + scale_x_continuous(breaks = c(1,2,3,4,5,6,7,8,9,10),label = c("One","Two","Three","Four","Five", "Six","Seven","Eight","Nine", "Ten"))
+```
+
+
+#### 12) Red Wine Density and Alcochol Percentage
+```{r echo=FALSE,message=FALSE, warning=FALSE, Bivariate_Plots}
+ggplot(data=RWine_data, aes(x=density,y=alcohol)) + geom_jitter(color="light green") + labs(title="The Relationship between Alcohol Percentage in Red Wine and Water Density",x="Water Density in Red Wine", y= "Alcohol Percentage")
+```
+
+#### 13) Red Wine Density and Residual Suger
+```{r echo=FALSE,message=FALSE, warning=FALSE, Bivariate_Plots}
+ggplot(data=RWine_data, aes(x=density,y=residual.sugar)) + geom_jitter(color="light green") + labs(title="The Relationship between Residual Sugar Level in Red Wine After Fermentation and Water Density",x="Water Density in Red Wine", y= "Residual Sugar Level")
+```
+
+#### 14) Red Wine Density and Chlorides Level
+```{r echo=FALSE,message=FALSE, warning=FALSE, Bivariate_Plots}
+ggplot(data=RWine_data, aes(x=density,y=chlorides)) + geom_point(color="light green") + labs(title="The Relationship between Chlorides Level in Red Wine and Water Density",x="Water Density in Red Wine", y= "Chlorides Level")
+```
+
+#### 15) The Relationship between Fixed Acidity and Volatile Acidity
+```{r echo=FALSE,message=FALSE, warning=FALSE, Bivariate_Plots}
+ggplot(data=RWine_data, aes(x=fixed.acidity,y=volatile.acidity)) + geom_point(color="light green") + labs(title="The Relationship between Fixed Acidity and Volatile Acidity",x="Fixed Acidity", y= "Volatile Acidity")
+```
+
+#### 16) The Relationship between Fixed Acidity and pH Level
+```{r echo=FALSE,message=FALSE, warning=FALSE, Bivariate_Plots}
+ggplot(data=RWine_data, aes(x=fixed.acidity,y=pH)) + geom_point(color="light green") + labs(title="The Relationship between Fixed Acidity and and pH Level",x="Fixed Acidity", y= "pH Level")
+```
+
+# Bivariate Analysis
+
+### Talk about some of the relationships you observed in this part of the investigation. How did the feature(s) of interest vary with other features in the dataset?
+I investgated most of the key feautures against the red wine quality.I also investegated the possible corrolations between the dataset features against each other. Below are some of my key observations:
+
+1)  No relationship between Red Wine Quality and [Fixed Acidity, Water Density, Total Sulfar Dioxide, and Resedual Suger].
+2)  No clear relationship ( due to the minimal amount of data provided) between Red Wine Quality and [ Achohol,Citric Acid].
+3)  Slight negitive relationship between Red Wine Quality and [ pH Level and Volatile Acidity]
+4)  Slight positive relationship between Red Wine Quality and Sulphates
+
+### Did you observe any interesting relationships between the other features (not the main feature(s) of interest)?
+
+Yes I observed an interesting negitive corrolation between pH Level and Fixed Acidity in Red Wine. I also noticed a nigitive corrolation between Alcohol Percentage and Red Wine Density with a quit wide varanice. On the other hand, there is a slight positive corrolation between Choloride Level and Density and Residual Suger and Density in red Wine. Finaly, no relationship observed between Fixed Acidity and Volatile Acidity.
+
+### What was the strongest relationship you found?
+
+The stongest relationship I observed was between Red Wine Fixed Acidity and pH Level,the relationship was stongly negitive.
+
+
+# Multivariate Plots Section
+
+#### 1) The Effect of Fixed Acidity and pH Level of Red Wine Quality
+```{r echo=FALSE,message=FALSE, warning=FALSE, Multivariate_Plots}
+ggplot(data=RWine_data, aes(x=fixed.acidity,y=pH)) + geom_point(aes(color=quality)) + labs(title="The Effect of Fixed Acidity and pH Level of Red Wine Quality",x="Fixed Acidity", y= "pH Level")
+```
+#### 2) The Effect of Fixed Acidity and Volatile Acidity of Red Wine Quality
+```{r echo=FALSE,message=FALSE, warning=FALSE, Multivariate_Plots}
+ggplot(data=RWine_data, aes(x=fixed.acidity,y=volatile.acidity)) + geom_point(aes(color=quality)) + labs(title="The Effect of Fixed Acidity and Volatile Acidity of Red Wine Quality",x="Fixed Acidity", y= "Volatile Acidity ")
+```
+#### 3) The Effect of Volatile Acidity and pH Level of Red Wine Quality
+```{r echo=FALSE,message=FALSE, warning=FALSE, Multivariate_Plots}
+ggplot(data=RWine_data, aes(x=pH,y=volatile.acidity)) + geom_point(aes(color=quality))+ labs(title="The Effect of pH Level and Volatile Acidity of Red Wine Quality",x="Fixed Acidity", y= "pH Level ")
+```
+#### 4) The Effect of Volatile Acidity and Citric Acid of Red Wine Quality
+```{r echo=FALSE,message=FALSE, warning=FALSE, Multivariate_Plots}
+ggplot(data=RWine_data, aes(x=volatile.acidity,y=citric.acid)) + geom_point(aes(color=quality)) + labs(title="The Effect of Citric Acid and Volatile Acidity of Red Wine Quality",x="Volatile Acidity", y= "Citric Acid ")
+```
+#### 5) The Effect of Volatile Acidity and Sulphates Level of Red Wine Quality
+```{r echo=FALSE,message=FALSE, warning=FALSE, Multivariate_Plots}
+ggplot(data=RWine_data, aes(y=volatile.acidity,x=sulphates)) + geom_point(aes(color=quality))+ labs(title="The Effect of Sulphates and Volatile Acidity of Red Wine Quality",x="Sulphates", y= "Volatile Acidity")
+```
+
+#### 6) The Effect of Chlorides and Density of Red Wine Quality
+```{r echo=FALSE,message=FALSE, warning=FALSE, Multivariate_Plots}
+ggplot(data=RWine_data, aes(x=density,y=chlorides)) + geom_point(aes(color=quality))+ labs(title="The Effect of Chlorides and Density of Red Wine Quality",x="Density", y= "Chlorides")
+```
+
+#### 7) The Effect of Residual Sugar and Density of Red Wine Quality
+```{r echo=FALSE,message=FALSE, warning=FALSE, Multivariate_Plots}
+ggplot(data=RWine_data, aes(x=density,y=residual.sugar)) + geom_point(aes(color=quality))+ labs(title="The Effect of Chlorides and Density of Red Wine Quality",x="Density", y= "Residual Sugar")
+```
+
+# Multivariate Analysis
+
+### Talk about some of the relationships you observed in this part of the investigation. Were there features that strengthened each other in terms of looking at your feature(s) of interest?
+I have here alot of interesting findings that was not clear to me in my bivarate analysis. For example, it is now confirmed to me from the prevouse figures that high amounts of Citric Acid are highly affecting the high rating of the Red wine. In addition, my multivarite tests confirmed the inital findings of my bivarite analysis, the low levels of pH, Choloride, and Volitale Acidity are highly affecting the high rates for quality.
+
+### Were there any interesting or surprising interactions between features?
+Yes, in Bivarate analysis I noticed a slight positive corrolation between Sulphates and Red Wine Quality. However, through diffrent plotting in multivariate I confimed that Sulphates is not affected the Quality of Red Wine.
+
+### OPTIONAL: Did you create any models with your dataset? Discuss the strengths and limitations of your model.
+No
+------
+
+# Final Plots and Summary
+
+### Red Wine Quality By Total
+
+```{r echo=FALSE,message=FALSE, warning=FALSE}
+ggplot(RWine_data, aes(quality)) + geom_bar() + labs( title= "Quality of Red Wine", y="Total Count", x="Rating of Red Wine") + scale_x_continuous(breaks = c(1,2,3,4,5,6,7,8,9,10),label = c("One","Two","Three","Four","Five", "Six","Seven","Eight","Nine", "Ten"))
+```
+
+### Description of Red Wine Quality By Total
+Exprets evalauted the quality of the red wine on a scale of  0 (very bad) and 10 (very excellent). According to the provided dataset, the majority of wine tasters rate most of wines as 5 and 6 stars where non was rated as 9 or 10 of quality. This is a high level univarate analysis to give us a high level understanding on the red wine quality distrubution.
+
+
+
+#### Red Wine Density and Chlorides Level
+```{r echo=FALSE,message=FALSE, warning=FALSE, Bivariate_Plots}
+ggplot(data=RWine_data, aes(x=density,y=chlorides)) + geom_point(color="light green") + labs(title="The Relationship between Chlorides Level in Red Wine and Water Density",x="Water Density in Red Wine", y= "Chlorides Level")
+```
+
+### Description of the relationship between Red Wine Density and Chlorides Level
+The graph shows a clear positive corolation betwwen Chloride and Water Density in Red Wine. As a result of this insight, we expected that chloride has an indirect infulance on the quality of Red Wine which was confirmed in my multivarate analysis. However, no direct corrolation between Choloride and quality was noticed in the bivariate analysis.
+
+### The Effect of Volatile Acidity and Citric Acid of Red Wine Quality
+```{r echo=FALSE,message=FALSE, warning=FALSE, Multivariate_Plots}
+ggplot(data=RWine_data, aes(x=volatile.acidity,y=citric.acid)) + geom_point(aes(color=quality)) + labs(title="The Effect of Citric Acid and Volatile Acidity of Red Wine Quality",x="Volatile Acidity", y= "Citric Acid ")
+```
+
+### Description of the Effect of Volatile Acidity and Citric Acid of Red Wine Quality
+This plot confirm the effect of low levels of Volatile Acidity and high levels of citric Acid on the quality of Red Wine.
+
+------
+
+# Reflection
+The little data provided on Red Wine was a key struggle where it is hard to infer any reasnable conculsion from such little data. In addition, it was not menstioned if this sample data is collected in unbased and representing the whole population of data. 
+
+Wine quality is also highly affected by the wine making process, the type of grape, the way of harvesting the grape, just to name a few. These information was not menstioned in the dataset. furthermore, it is an interesting area for future work
+
+In conclusion, what surprised me the most that the more I investegate the features across each others the more insight of potinial relationship I discovered..  
+
+# Helpful Resources
+The below resources were very benefical for my analysis:
+
+1) Dimonds Example [https://s3.amazonaws.com/content.udacity-data.com/courses/ud651/diamondsExample_2016-05.html]
+2) ggplot2 Cheat Sheet [https://www.rstudio.com/wp-content/uploads/2015/03/ggplot2-cheatsheet.pdf]
